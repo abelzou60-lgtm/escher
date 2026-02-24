@@ -21,13 +21,25 @@ function toggleLanguage() {
 }
 document.getElementById('languageToggle')?.addEventListener('click', toggleLanguage);
 
-// 编号查询逻辑
-document.getElementById('query-btn')?.addEventListener('click', async function() {
-    const serial = document.getElementById('serial-input').value;
+// 防抖函数
+function debounce(func, wait) {
+    let timeout;
+    return function() {
+        const context = this;
+        const args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            func.apply(context, args);
+        }, wait);
+    };
+}
+
+// 搜索函数
+async function searchSerial(serial) {
     const resultDiv = document.getElementById('result');
     
     if (!serial) {
-        resultDiv.textContent = '请输入编号 / Please enter serial number';
+        resultDiv.textContent = '';
         return;
     }
     
@@ -57,6 +69,19 @@ document.getElementById('query-btn')?.addEventListener('click', async function()
         console.error('Search error:', error);
         resultDiv.textContent = '搜索出错，请重试 / Search error, please try again';
     }
+}
+
+// 编号查询逻辑
+const debouncedSearch = debounce(searchSerial, 300);
+
+document.getElementById('serial-input')?.addEventListener('input', function() {
+    const serial = this.value;
+    debouncedSearch(serial);
+});
+
+document.getElementById('query-btn')?.addEventListener('click', async function() {
+    const serial = document.getElementById('serial-input').value;
+    await searchSerial(serial);
 });
 
 // 动态加载文章（需引入Marked.js）

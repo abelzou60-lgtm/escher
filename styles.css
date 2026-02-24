@@ -1,17 +1,17 @@
 body {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: #ffffff;
+    color: #000000;
     font-family: 'Helvetica', 'PingFang SC', sans-serif;
     text-align: center;
     padding: 2rem;
     margin: 0;
 }
 .logo { width: 180px; margin-bottom: 2rem; }
-.slogan { color: #D4AF37; font-size: 1.2rem; margin-bottom: 3rem; }
+.slogan { color: #000000; font-size: 1.2rem; margin-bottom: 3rem; }
 .buttons { display: flex; flex-direction: column; align-items: center; }
 .btn {
     display: block;
-    color: #D4AF37;
+    color: #000000;
     border: 1px solid #D4AF37;
     padding: 1rem;
     margin: 0.8rem auto;
@@ -20,18 +20,18 @@ body {
     transition: background-color 0.3s;
 }
 .btn:hover { background-color: rgba(212, 175, 55, 0.1); }
-.external-link, .contact { color: #D4AF37; margin: 2rem 0; display: block; }
+.external-link, .contact { color: #000000; margin: 2rem 0; display: block; }
 .language-toggle {
     position: fixed;
-    top: 1rem;
+    bottom: 1rem;
     right: 1rem;
     background: transparent;
-    color: #D4AF37;
+    color: #000000;
     border: 1px solid #D4AF37;
     padding: 0.5rem 1rem;
     cursor: pointer;
 }
-.back-btn { color: #D4AF37; text-decoration: none; margin-bottom: 2rem; display: inline-block; }
+.back-btn { color: #000000; text-decoration: none; margin-bottom: 2rem; display: inline-block; }
 .article-container, .product, .payment {
     max-width: 1000px;
     margin: 0 auto;
@@ -55,30 +55,30 @@ body {
 }
 .article-item a {
     text-decoration: none;
-    color: #ffffff;
+    color: #000000;
     display: block;
 }
 .chinese-title {
     display: block;
     font-size: 1.1rem;
     margin-bottom: 0.5rem;
-    color: #D4AF37;
+    color: #000000;
 }
 .english-title {
     display: block;
     font-size: 0.9rem;
-    color: #ffffff;
+    color: #000000;
     opacity: 0.8;
 }
 input[type="text"] {
     background: transparent;
     border: 1px solid #D4AF37;
-    color: white;
+    color: #000000;
     padding: 0.8rem;
     width: 300px;
     margin: 1rem 0;
 }
-#result { margin-top: 1rem; color: #D4AF37; }
+#result { margin-top: 1rem; color: #000000; }
 
 /* 响应式布局 */
 @media (max-width: 768px) {
@@ -90,5 +90,8 @@ input[type="text"] {
     }
     body {
         padding: 1rem;
+    }
+    .logo {
+        width: 100%;
     }
 }

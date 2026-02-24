@@ -35,6 +35,21 @@ function debounce(func, wait) {
 }
 
 // 搜索函数
+let pagefindInstance = null;
+
+async function initializePagefind() {
+    if (!pagefindInstance && window.Pagefind) {
+        try {
+            pagefindInstance = await window.Pagefind.create();
+            return pagefindInstance;
+        } catch (error) {
+            console.error('Failed to initialize Pagefind:', error);
+            throw error;
+        }
+    }
+    return pagefindInstance;
+}
+
 async function searchSerial(serial) {
     const resultDiv = document.getElementById('result');
     
@@ -51,7 +66,8 @@ async function searchSerial(serial) {
             throw new Error('Pagefind not loaded');
         }
         
-        const pagefind = await window.Pagefind.create();
+        // 使用单例模式初始化Pagefind
+        const pagefind = await initializePagefind();
         const search = await pagefind.search(serial);
         
         if (search.results.length === 0) {

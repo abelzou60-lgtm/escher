@@ -34,76 +34,18 @@ function debounce(func, wait) {
     };
 }
 
-// 搜索函数
-let pagefindInstance = null;
-
-async function initializePagefind() {
-    if (!pagefindInstance && window.Pagefind) {
-        try {
-            pagefindInstance = await window.Pagefind.create();
-            return pagefindInstance;
-        } catch (error) {
-            console.error('Failed to initialize Pagefind:', error);
-            throw error;
+// 初始化Pagefind搜索
+if (window.PagefindUI) {
+    new window.PagefindUI({
+        element: "#pagefind-search",
+        showImages: false,
+        translations: {
+            placeholder: "搜索内容...",
+            zero_results: "未找到匹配内容",
+            results: "找到 {{ count }} 个结果"
         }
-    }
-    return pagefindInstance;
+    });
 }
-
-async function searchSerial(serial) {
-    const resultDiv = document.getElementById('result');
-    
-    if (!serial) {
-        resultDiv.textContent = '';
-        return;
-    }
-    
-    resultDiv.textContent = '查询中... / Querying...';
-    
-    try {
-        // 确保Pagefind已加载
-        if (!window.Pagefind) {
-            throw new Error('Pagefind not loaded');
-        }
-        
-        // 使用单例模式初始化Pagefind
-        const pagefind = await initializePagefind();
-        const search = await pagefind.search(serial);
-        
-        if (search.results.length === 0) {
-            resultDiv.innerHTML = '<p>未找到匹配的编号 / No matching serial number found</p>';
-        } else {
-            let resultsHTML = '<h3>查询结果 / Search Results</h3><ul>';
-            for (const result of search.results) {
-                const data = await result.data();
-                resultsHTML += `
-                    <li>
-                        <a href="${data.url}" target="_blank">${data.title}</a>
-                        <p>${data.excerpt || '无摘要 / No excerpt'}</p>
-                    </li>
-                `;
-            }
-            resultsHTML += '</ul>';
-            resultDiv.innerHTML = resultsHTML;
-        }
-    } catch (error) {
-        console.error('Search error:', error);
-        resultDiv.textContent = '搜索出错，请重试 / Search error, please try again';
-    }
-}
-
-// 编号查询逻辑
-const debouncedSearch = debounce(searchSerial, 300);
-
-document.getElementById('serial-input')?.addEventListener('input', function() {
-    const serial = this.value;
-    debouncedSearch(serial);
-});
-
-document.getElementById('query-btn')?.addEventListener('click', async function() {
-    const serial = document.getElementById('serial-input').value;
-    await searchSerial(serial);
-});
 
 // 动态加载文章（需引入Marked.js）
 if (window.location.pathname.includes('escher.html')) {

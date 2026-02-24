@@ -22,12 +22,41 @@ function toggleLanguage() {
 document.getElementById('languageToggle')?.addEventListener('click', toggleLanguage);
 
 // 编号查询逻辑
-document.getElementById('query-btn')?.addEventListener('click', function() {
+document.getElementById('query-btn')?.addEventListener('click', async function() {
     const serial = document.getElementById('serial-input').value;
     const resultDiv = document.getElementById('result');
-    resultDiv.textContent = serial ? 
-        查询中... / Querying... : 
-        请输入编号 / Please enter serial number;
+    
+    if (!serial) {
+        resultDiv.textContent = '请输入编号 / Please enter serial number';
+        return;
+    }
+    
+    resultDiv.textContent = '查询中... / Querying...';
+    
+    try {
+        const pagefind = await window.Pagefind.create();
+        const search = await pagefind.search(serial);
+        
+        if (search.results.length === 0) {
+            resultDiv.innerHTML = '<p>未找到匹配的编号 / No matching serial number found</p>';
+        } else {
+            let resultsHTML = '<h3>查询结果 / Search Results</h3><ul>';
+            for (const result of search.results) {
+                const data = await result.data();
+                resultsHTML += `
+                    <li>
+                        <a href="${data.url}" target="_blank">${data.title}</a>
+                        <p>${data.excerpt || '无摘要 / No excerpt'}</p>
+                    </li>
+                `;
+            }
+            resultsHTML += '</ul>';
+            resultDiv.innerHTML = resultsHTML;
+        }
+    } catch (error) {
+        console.error('Search error:', error);
+        resultDiv.textContent = '搜索出错，请重试 / Search error, please try again';
+    }
 });
 
 // 动态加载文章（需引入Marked.js）

@@ -46,6 +46,11 @@ async function searchSerial(serial) {
     resultDiv.textContent = '查询中... / Querying...';
     
     try {
+        // 确保Pagefind已加载
+        if (!window.Pagefind) {
+            throw new Error('Pagefind not loaded');
+        }
+        
         const pagefind = await window.Pagefind.create();
         const search = await pagefind.search(serial);
         

@@ -34,22 +34,61 @@ function debounce(func, wait) {
     };
 }
 
-
-<script src="/post/pagefind/pagefind-ui.js"></script>
-    window.addEventListener('DOMContentLoaded', function () {
-        console.log("Initializing Pagefind search...");
-        try {
-            new PagefindUI({
-                element: "#pagefind-search",
-                showImages: false,
-                showSubResults: true,
-                resetStyles: false,
-                translations: {
-                    placeholder: "搜索资源、教程、工具..."
-                }
-            });
-            console.log("Pagefind search initialized successfully");
-        } catch (error) {
-            console.error("Pagefind search initialization failed:", error);
+// 搜索函数
+async function searchSerial(serial) {
+    const resultDiv = document.getElementById('result');
+    
+    if (!serial) {
+        resultDiv.textContent = '';
+        return;
+    }
+    
+    resultDiv.textContent = '查询中... / Querying...';
+    
+    try {
+        const pagefind = await window.Pagefind.create();
+        const search = await pagefind.search(serial);
+        
+        if (search.results.length === 0) {
+            resultDiv.innerHTML = '<p>未找到匹配的编号 / No matching serial number found</p>';
+        } else {
+            let resultsHTML = '<h3>查询结果 / Search Results</h3><ul>';
+            for (const result of search.results) {
+                const data = await result.data();
+                resultsHTML += `
+                    <li>
+                        <a href="${data.url}" target="_blank">${data.title}</a>
+                        <p>${data.excerpt || '无摘要 / No excerpt'}</p>
+                    </li>
+                `;
+            }
+            resultsHTML += '</ul>';
+            resultDiv.innerHTML = resultsHTML;
         }
-    });
+    } catch (error) {
+        console.error('Search error:', error);
+        resultDiv.textContent = '搜索出错，请重试 / Search error, please try again';
+    }
+}
+
+// 编号查询逻辑
+const debouncedSearch = debounce(searchSerial, 300);
+
+document.getElementById('serial-input')?.addEventListener('input', function() {
+    const serial = this.value;
+    debouncedSearch(serial);
+});
+
+document.getElementById('query-btn')?.addEventListener('click', async function() {
+    const serial = document.getElementById('serial-input').value;
+    await searchSerial(serial);
+});
+
+// 动态加载文章（需引入Marked.js）
+if (window.location.pathname.includes('escher.html')) {
+    fetch('articles/article1.md')
+        .then(response => response.text())
+        .then(text => {
+            document.getElementById('article-content').innerHTML = marked.parse(text);
+        });
+}
